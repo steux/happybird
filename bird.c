@@ -5,6 +5,7 @@
 unsigned char X, Y;
 
 #ifdef PLUSROM
+#include "plusrom.h"
 const char *PLUSROM_API = "a\0h.firmaplus.de";
 #endif
 
@@ -176,6 +177,21 @@ void load_highscore()
 eeprom_error:
     asm("jsr i2c_stopread");
 }
+
+#ifdef PLUSROM
+void plusrom_send_score()
+{
+    *WriteToBuffer = game_mode;
+#ifdef PAL
+    *WriteToBuffer = 1;
+#else
+    *WriteToBuffer = 0;
+#endif
+    *WriteToBuffer = score_low;
+    *WriteToBuffer = score_high;
+    *WriteSendBuffer = 0xff; // HappyBird game id in HighScore DB
+}
+#endif
 
 // Display kernel code
 
@@ -643,6 +659,9 @@ void gameover()
 #endif 
     X = GAMEOVER_SOUND;
     play_sound();
+#ifdef PLUSROM
+    plusrom_send_score();
+#endif
     if (score_low == highscore_low && score_high == highscore_high) {
         save_highscore();
     }
