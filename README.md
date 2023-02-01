@@ -27,6 +27,10 @@ With cc2600 installed :
 
 `cc2600 bird.c -DPAL` to build the PAL/SECAM version
 
+This will produce `out.a`, which is a DASM compatible source code.
+
+Type `dasm out.a -f3 -v4 -oout.bin -lout.lst -sout.sym` to make the cartridge.
+
 # TODO
 
 - [ ] implement PlusROM version for high score registering
