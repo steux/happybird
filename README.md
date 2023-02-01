@@ -31,6 +31,14 @@ This will produce `out.a`, which is a DASM compatible source code.
 
 Type `dasm out.a -f3 -v4 -oout.bin -lout.lst -sout.sym` to make the cartridge.
 
+# How to play it :
+
+You can run freely this game on Harmony cart or PlusCart, or probably any cart able to run F6 bankswitching scheme
+carts.
+
+This ROM doesn't work directly with the Stella emulator, due to false autodetection of paddle inputs. Run stella with :
+`stella -lc Joystick happybird.bin`
+
 # TODO
 
 - [ ] implement PlusROM version for high score registering
