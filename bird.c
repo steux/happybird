@@ -1458,9 +1458,9 @@ void main()
     *CXCLR = 0;
     strobe(WSYNC);
     strobe(HMOVE);
+    if (!(*SWCHB & 0x01)) init(); 
     *HMM0 = 0;
     *HMM1 = 0;
-    if (!(*SWCHB & 0x01)) init(); 
         
     set_rainbow_and_grass();
     counter++; 
