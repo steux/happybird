@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="happybird-label-main.jpg" width="30%" height="30%">
+</p>
+
 # Paul's HappyBird. A colorful game for the Atari 2600.
 
 Paul's HeppyBird has been written in C using cc2600. 
