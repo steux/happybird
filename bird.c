@@ -144,9 +144,9 @@ void save_highscore()
 {
     asm("jsr i2c_startwrite");
     asm("bcs .eeprom_error");
-    load(0x01);
+    load(0x11);
     asm("jsr i2c_txbyte");
-    load(0x40);
+    load(0x80);
     asm("jsr i2c_txbyte");
     load(highscore_high);
     asm("jsr i2c_txbyte");
@@ -160,9 +160,9 @@ void load_highscore()
 {
     asm("jsr i2c_startwrite	; Start signal and $a0 command byte");
     asm("bcs .eeprom_error	; exit if command byte not acknowledged");
-    load(0x01);
+    load(0x11);
     asm("jsr i2c_txbyte");
-    load(0x40);
+    load(0x80);
     asm("jsr i2c_txbyte");
     asm("jsr i2c_stopwrite");
     asm("jsr i2c_startread");

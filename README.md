@@ -1,23 +1,23 @@
 # Paul's HappyBird. A colorful game for the Atari 2600.
 
-HeppyBird has been written in C using cc2600. 
+Paul's HeppyBird has been written in C using cc2600. 
 It's a 16KB ROM (classical ATARI bankswitching scheme) that has been
 tested on Harmony cart and PlusCart (but in PAL version only). 
 
 HappyBird implements :
 
-- 60Hz NTSC and a 50Hz PAL/secam versions
+- 60Hz NTSC and a 50Hz PAL/SECAM versions
 
 - Highscore save on SaveKey (high score reset by pulling the Settings switch for 5 seconds)
 
 - Amateur and Pro modes
 
-- Pause with the W/B switch 
+- Pause with the Color/BW switch 
 
 - Reach 100, 200, 300, etc and some colorful animations will start
 
 Technically, it's using an assymetric playfield scrolling with a big main sprite with 3 colors
-on the same (using all available sprites + the ball).
+on the same line (using all available sprites + the ball).
 
 # How to build it :
 
