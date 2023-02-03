@@ -182,14 +182,9 @@ eeprom_error:
 void plusrom_send_score()
 {
     *WriteToBuffer = game_mode;
-#ifdef PAL
-    *WriteToBuffer = 1;
-#else
-    *WriteToBuffer = 0;
-#endif
-    *WriteToBuffer = score_low;
     *WriteToBuffer = score_high;
-    *WriteSendBuffer = 0xff; // HappyBird game id in HighScore DB
+    *WriteToBuffer = score_low;
+    *WriteSendBuffer = 60; // HappyBird game id in HighScore DB
 }
 #endif
 
