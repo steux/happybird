@@ -179,11 +179,25 @@ eeprom_error:
 }
 
 #ifdef PLUSROM
+void dec_to_bcd()
+{
+    j = 0;
+    while (i >= 10) {
+        i -= 10;
+        j += 0x10;
+    }
+    j += i;
+}
+
 void plusrom_send_score()
 {
     *WriteToBuffer = game_mode;
-    *WriteToBuffer = score_high;
-    *WriteToBuffer = score_low;
+    i = score_high;
+    dec_to_bcd();
+    *WriteToBuffer = j;
+    i = score_low;
+    dec_to_bcd();
+    *WriteToBuffer = j;
     *WriteSendBuffer = 60; // HappyBird game id in HighScore DB
 }
 #endif
