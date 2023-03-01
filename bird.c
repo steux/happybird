@@ -89,6 +89,113 @@ unsigned char blinking_if_high_score;
 unsigned char blinking_counter;
 unsigned char sound_iterator;
 unsigned char sound_counter;
+unsigned char reset_pressed;
+unsigned char *speech_addr;
+unsigned char exclamation_counter;
+
+#ifdef FLAPPYBIRD
+const aligned(128) unsigned char flappybird0[16] = { 0x00, 0x00, 0x00, 0xc6, 0xc6, 0xc6, 0xc6, 0xc6, 0xc6, 0xf6, 0xf6, 0xf6, 0xc6, 0xf6, 0xf6, 0x76 };
+const unsigned char flappybird1[16] = { 0x03, 0x03, 0x03, 0x3b, 0x7b, 0xda, 0xda, 0xda, 0xda, 0xda, 0xda, 0x7b, 0x3b, 0x00, 0x00, 0x00 };
+const unsigned char flappybird2[16] = { 0x18, 0x18, 0x18, 0x9c, 0xde, 0xd6, 0xd6, 0xd6, 0xd6, 0xd6, 0xd6, 0xde, 0x9c, 0x00, 0x00, 0x00 };
+const unsigned char flappybird3[16] = { 0x30, 0x38, 0x18, 0x3b, 0x7b, 0xdb, 0xdb, 0xdb, 0xdb, 0xdb, 0xdb, 0xdb, 0xdb, 0x03, 0x03, 0x03 };
+const unsigned char flappybird4[16] = { 0x00, 0x00, 0x00, 0x9b, 0xdb, 0x5b, 0x5b, 0xdb, 0x9b, 0xdb, 0x43, 0x59, 0x58, 0x40, 0xc0, 0x80 };
+const unsigned char flappybird5[16] = { 0x00, 0x00, 0x00, 0x0f, 0x1f, 0x1b, 0x1b, 0x1b, 0x1b, 0xdb, 0xdb, 0xdf, 0xcf, 0x03, 0x03, 0x03 };
+
+void display_flappybird()
+{
+    strobe(WSYNC);
+    strobe(HMOVE);
+    *COLUBK = BLACK;
+    *GRP0 = 0;
+    *GRP1 = 0;
+    *NUSIZ0 = 0x33;
+    *NUSIZ1 = 0x33;
+    *COLUP0 = WHITE;
+    *COLUP1 = WHITE;
+    *VDELP0 = 1;
+    *VDELP1 = 1;
+    strobe(RESP0);
+    strobe(RESP1);
+    *HMP1 = 0x20;
+    *HMP0 = 0x10;
+    strobe(WSYNC);
+    strobe(HMOVE);
+    for (Y = 15; Y >= 0; Y--) {
+        strobe(WSYNC);
+        i = Y;
+        *GRP0 = flappybird0[Y];
+        *GRP1 = flappybird1[Y];
+        *GRP0 = flappybird2[Y];
+        X = flappybird4[Y];
+        j = flappybird5[Y];
+        load(flappybird3[y]);
+        Y = j;
+        store(*GRP1);
+        *GRP0 = X;
+        *GRP1 = Y;
+        strobe(GRP0);
+        Y = i;
+    }
+    strobe(WSYNC);
+    strobe(HMOVE);
+    *VDELP0 = 0;
+    *VDELP1 = 0;
+    *GRP0 = 0;
+    *GRP1 = 0;
+}
+#else
+const aligned(256) unsigned char happybird0[32] = { 0x1e, 0x21, 0x4c, 0x42, 0x42, 0x4c, 0x21, 0x1e, 0x00, 0x00, 0x00, 0xd8, 0xd9, 0xdb, 0xdb, 0xdb, 0xfb, 0xfb, 0xfb, 0xd9, 0xd8, 0xd8, 0xd8, 0xd8, 0x00, 0x86, 0x8a, 0xca, 0xaa, 0xa6, 0xa0, 0xc0 };
+const unsigned char happybird1[32] = { 0x38, 0x05, 0x85, 0x99, 0xa1, 0xa1, 0x1d, 0x00, 0x0c, 0x0c, 0x0c, 0xef, 0xef, 0x6d, 0x6d, 0x6d, 0x6d, 0x6d, 0x6d, 0xef, 0xef, 0x00, 0x00, 0x00, 0x00, 0x68, 0xa8, 0xa8, 0xa8, 0xaa, 0x0a, 0x08 };
+const unsigned char happybird2[32] = { 0x99, 0x22, 0x3a, 0x2a, 0x92, 0x00, 0x00, 0x00, 0x30, 0x30, 0x30, 0x3c, 0xbe, 0xb6, 0xb6, 0xb6, 0xb6, 0xb6, 0xb6, 0xbe, 0x3c, 0x00, 0x00, 0x00, 0x00, 0xc0, 0x20, 0x40, 0x80, 0x60, 0x00, 0x00 };
+const unsigned char happybird3[32] = { 0xa8, 0xa8, 0x90, 0xa8, 0xa8, 0x00, 0x00, 0x00, 0x30, 0x38, 0x18, 0x3b, 0x7b, 0xdb, 0xdb, 0xdb, 0xdb, 0xdb, 0xdb, 0xdb, 0xdb, 0x03, 0x03, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+const unsigned char happybird4[32] = { 0xe6, 0x89, 0xc9, 0x69, 0x29, 0xc6, 0x00, 0x00, 0x00, 0x00, 0x00, 0x9b, 0xdb, 0x5b, 0x5b, 0xdb, 0x9b, 0xdb, 0x43, 0x59, 0x58, 0x40, 0xc0, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+const unsigned char happybird5[32] = { 0x76, 0x41, 0x61, 0x36, 0x11, 0x66, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0f, 0x1f, 0x1b, 0x1b, 0x1b, 0x1b, 0xdb, 0xdb, 0xdf, 0xcf, 0x03, 0x03, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+
+void display_happybird()
+{
+    strobe(WSYNC);
+    strobe(HMOVE);
+    *COLUBK = RED;
+    *VDELP0 = 1;
+    *VDELP1 = 1;
+    *NUSIZ0 = 0x33;
+    *NUSIZ1 = 0x33;
+    *COLUP0 = WHITE;
+    *COLUP1 = WHITE;
+    *HMP1 = 0xA0; 
+    strobe(RESP0);
+    strobe(RESP1);
+    *HMP0 = 0x90;
+    strobe(WSYNC);
+    strobe(HMOVE);
+    csleep(7);
+    *HMP1 = 0x0;
+    *HMP0 = 0x0;
+    for (Y = 31; Y >= 0; Y--) {
+        strobe(WSYNC);
+        strobe(HMOVE);
+        i = Y;
+        *GRP0 = happybird0[Y];
+        *GRP1 = happybird1[Y];
+        *GRP0 = happybird2[Y];
+        X = happybird4[Y];
+        j = happybird5[Y];
+        load(happybird3[Y]);
+        Y = j;
+        store(*GRP1);
+        *GRP0 = X;
+        *GRP1 = Y;
+        strobe(GRP0);
+        Y = i;
+    }
+    strobe(WSYNC);
+    strobe(HMOVE);
+    *VDELP0 = 0;
+    *VDELP1 = 0;
+    *GRP0 = 0;
+    *GRP1 = 0;
+}
+#endif
 
 // Sound code
 
@@ -131,6 +238,54 @@ void play_sound_iteration()
         } 
     }
 }
+
+// Atarivox code
+#include "speakjet.inc"
+
+void speakout()
+{
+    asm("SPKOUT i");
+}
+
+const char happybird_speech[] = { 31, 199, 133, 145, 167, 6, 183, 132, 198, 128, 6, 7, 170, 151, 176, 6, 0xff };
+//const char hello_speech[] = { 20, 96, 21, 114, 22, 88, 23, 5, 183, 7, 159, 146, 164, 0xff };
+const char getready_speech[] = { 8, 178, 8, 131, 191, 6, 8, 148, 130, 174, 128, 6, 0xff };
+const char gameover_speech[] = { 31, 0x08, 0xb2, 0x9a, 0x8c, 0x08, 0x89, 0x07, 0xa6, 0x97, 0xff };
+const char normal_mode_speech[] = { 31, 142, 153, 140, 132, 145, 140, 164, 175, 0xff };
+const char pro_mode_speech[] = { 31, 199, 148, 136, 140, 153, 175, 0xff };
+
+const char good_speech[] = { 31, 8, 179, 139, 139, 177, 6, 0xff };
+const char great_speech[] = { 31, 8, 179, 7, 148, 154, 191, 6, 0xff };
+const char incredible_speech[] = { 31, 129, 142, 195, 148, 131, 174, 129, 171, 159, 6, 0xff };
+const char marvelous_speech[] = { 31, 140, 136, 166, 166, 131, 145, 133, 188, 6, 0xff };
+const char rock_and_roll_speech[] = { 31, 148, 135, 197, 6, 8, 132, 8, 141, 177, 6, 148, 8, 137, 8, 146, 6, 0xff };
+const char super_speech[] = { 31, 187, 139, 199, 151, 6, 0xff };
+const char stunning_speech[] = { 31, 187, 191, 134, 142, 142, 129, 144, 6, 0xff };
+const char magical_speech[] = { 31, 140, 132, 165, 129, 195, 8, 136, 8, 146, 6, 0xff };
+const char sensational_speech[] = { 31, 187, 131, 142, 187, 130, 189, 133, 132, 145, 6, 0xff };
+const char exhilarating_speech[] = { 31, 131, 195, 184, 129, 145, 131, 130, 191, 129, 144, 6, 0xff };
+const char breathtaking_speech[] = { 31, 171, 148, 128, 190, 191, 130, 195, 129, 144, 6, 0xff };
+const char champion_speech[] = { 31, 182, 132, 140, 199, 129, 133, 6, 0xff };
+const char let_us_go_speech[] = { 31, 145, 131, 191, 6, 8, 134, 187, 6, 8, 179, 8, 164, 6, 0xff };
+const char oh_la_la_speech[] = { 31, 136, 6, 146, 135, 135, 6, 146, 135, 135, 6, 0xff };
+const char oh_year_speech[] = { 31, 136, 6, 143, 149, 6, 0xff };
+const char oh_my_god_speech[] = { 31, 136, 6, 140, 155, 6, 179, 136, 174, 6, 0xff };
+const char hurray_speech[] = { 31, 184, 151, 148, 130, 6, 0xff };
+const char bingo_speech[] = { 31, 171, 129, 144, 136, 6, 0xff };
+const char what_a_wonderful_game_speech[] = { 31, 185, 8, 135, 191, 6, 154, 128, 6, 147, 136, 142, 174, 151, 186, 138, 146, 6, 8, 178, 154, 140, 6, 0xff };
+const char atari_is_better_speech[] = { 31, 132, 191, 152, 128, 6, 8, 129, 167, 6, 171, 131, 191, 191, 151, 6, 169, 8, 132, 8, 142, 6, 142, 129, 142, 191, 131, 142, 174, 164, 6, 0xff };
+const char *const exclamations[20] = { 
+    good_speech, great_speech, incredible_speech, marvelous_speech, rock_and_roll_speech, 
+    super_speech, stunning_speech, magical_speech, sensational_speech, exhilarating_speech, 
+    breathtaking_speech, champion_speech, let_us_go_speech, oh_la_la_speech, oh_year_speech, 
+    oh_my_god_speech, hurray_speech, bingo_speech, what_a_wonderful_game_speech, atari_is_better_speech};
+
+inline void speak_happybird() { speech_addr = happybird_speech; }
+//inline void speak_hello() { speech_addr = hello_speech; }
+inline void speak_getready() { speech_addr = getready_speech; }
+inline void speak_gameover() { speech_addr = gameover_speech; }
+inline void speak_normal_mode() { speech_addr = normal_mode_speech; }
+inline void speak_pro_mode() { speech_addr = pro_mode_speech; }
 
 // Savekey code
 
@@ -595,8 +750,6 @@ void init()
     state = 0;
     ybird = 70 * 256;
     yspeed = 0;
-    score_low = 00;
-    score_high = 00;
     left_window = 2;
     right_window = 2;
     difficulty = 8;
@@ -604,6 +757,7 @@ void init()
     random = 0xaa;
     blinking_if_high_score = BROWN;
     load_highscore();
+    speak_happybird();
 }
 
 void rand()
@@ -641,13 +795,14 @@ void getready()
     next_sequence();
     scroll_sequence = 12;
     state = 1;
-    score_low = 00;
-    score_high = 00;
+    score_low = 0;
+    score_high = 0;
     load_scroll_sequence();
     blinking_if_high_score = BROWN;
     blinking_counter = 0;
     rainbow_offset = 0;
     rainbow_sequence = 0;
+    speak_getready();
 }
 
 void gameover()
@@ -674,11 +829,20 @@ void gameover()
     if (score_low == highscore_low && score_high == highscore_high) {
         save_highscore();
     }
+    speak_gameover();
 }
 
 void increment_score()
 {
     score_low++;
+
+    // Atarivox exclamations
+    if ((score_low & 0x07) == 1) { 
+        X = exclamation_counter++;
+        if (exclamation_counter == 20) exclamation_counter = 0;
+        speech_addr = exclamations[X];
+    }
+
     if (rainbow_sequence == 1 && rainbow_offset < 16) {
         rainbow_offset++;
     }
@@ -725,7 +889,7 @@ void scrolling()
 
 void flap()
 {
-    yspeed = 420;
+    yspeed = 400;
     if (bird_type == 0) 
         bird_type = 1;
     else {
@@ -739,7 +903,7 @@ void flap()
 
 void game_logic()
 {
-    if ((*INPT4 & 0x80) != 0) {
+    if (!(*INPT4 & 0x80)) {
         if (button_pressed == 0) {
             button_pressed = 1;
             flap();
@@ -832,110 +996,6 @@ bank1 void display_gameover()
     *GRP1 = 0;
 }
 
-#ifdef FLAPPYBIRD
-const aligned(128) unsigned char flappybird0[16] = { 0x00, 0x00, 0x00, 0xc6, 0xc6, 0xc6, 0xc6, 0xc6, 0xc6, 0xf6, 0xf6, 0xf6, 0xc6, 0xf6, 0xf6, 0x76 };
-const unsigned char flappybird1[16] = { 0x03, 0x03, 0x03, 0x3b, 0x7b, 0xda, 0xda, 0xda, 0xda, 0xda, 0xda, 0x7b, 0x3b, 0x00, 0x00, 0x00 };
-const unsigned char flappybird2[16] = { 0x18, 0x18, 0x18, 0x9c, 0xde, 0xd6, 0xd6, 0xd6, 0xd6, 0xd6, 0xd6, 0xde, 0x9c, 0x00, 0x00, 0x00 };
-const unsigned char flappybird3[16] = { 0x30, 0x38, 0x18, 0x3b, 0x7b, 0xdb, 0xdb, 0xdb, 0xdb, 0xdb, 0xdb, 0xdb, 0xdb, 0x03, 0x03, 0x03 };
-const unsigned char flappybird4[16] = { 0x00, 0x00, 0x00, 0x9b, 0xdb, 0x5b, 0x5b, 0xdb, 0x9b, 0xdb, 0x43, 0x59, 0x58, 0x40, 0xc0, 0x80 };
-const unsigned char flappybird5[16] = { 0x00, 0x00, 0x00, 0x0f, 0x1f, 0x1b, 0x1b, 0x1b, 0x1b, 0xdb, 0xdb, 0xdf, 0xcf, 0x03, 0x03, 0x03 };
-
-void display_flappybird()
-{
-    strobe(WSYNC);
-    strobe(HMOVE);
-    *COLUBK = BLACK;
-    *GRP0 = 0;
-    *GRP1 = 0;
-    *NUSIZ0 = 0x33;
-    *NUSIZ1 = 0x33;
-    *COLUP0 = WHITE;
-    *COLUP1 = WHITE;
-    *VDELP0 = 1;
-    *VDELP1 = 1;
-    strobe(RESP0);
-    strobe(RESP1);
-    *HMP1 = 0x20;
-    *HMP0 = 0x10;
-    strobe(WSYNC);
-    strobe(HMOVE);
-    for (Y = 15; Y >= 0; Y--) {
-        strobe(WSYNC);
-        i = Y;
-        *GRP0 = flappybird0[Y];
-        *GRP1 = flappybird1[Y];
-        *GRP0 = flappybird2[Y];
-        X = flappybird4[Y];
-        j = flappybird5[Y];
-        load(flappybird3[y]);
-        Y = j;
-        store(*GRP1);
-        *GRP0 = X;
-        *GRP1 = Y;
-        strobe(GRP0);
-        Y = i;
-    }
-    strobe(WSYNC);
-    strobe(HMOVE);
-    *VDELP0 = 0;
-    *VDELP1 = 0;
-    *GRP0 = 0;
-    *GRP1 = 0;
-}
-#else
-const aligned(256) unsigned char happybird0[32] = { 0x1e, 0x21, 0x4c, 0x42, 0x42, 0x4c, 0x21, 0x1e, 0x00, 0x00, 0x00, 0xd8, 0xd9, 0xdb, 0xdb, 0xdb, 0xfb, 0xfb, 0xfb, 0xd9, 0xd8, 0xd8, 0xd8, 0xd8, 0x00, 0x86, 0x8a, 0xca, 0xaa, 0xa6, 0xa0, 0xc0 };
-const unsigned char happybird1[32] = { 0x38, 0x05, 0x85, 0x99, 0xa1, 0xa1, 0x1d, 0x00, 0x0c, 0x0c, 0x0c, 0xef, 0xef, 0x6d, 0x6d, 0x6d, 0x6d, 0x6d, 0x6d, 0xef, 0xef, 0x00, 0x00, 0x00, 0x00, 0x68, 0xa8, 0xa8, 0xa8, 0xaa, 0x0a, 0x08 };
-const unsigned char happybird2[32] = { 0x99, 0x22, 0x3a, 0x2a, 0x92, 0x00, 0x00, 0x00, 0x30, 0x30, 0x30, 0x3c, 0xbe, 0xb6, 0xb6, 0xb6, 0xb6, 0xb6, 0xb6, 0xbe, 0x3c, 0x00, 0x00, 0x00, 0x00, 0xc0, 0x20, 0x40, 0x80, 0x60, 0x00, 0x00 };
-const unsigned char happybird3[32] = { 0xa8, 0xa8, 0x90, 0xa8, 0xa8, 0x00, 0x00, 0x00, 0x30, 0x38, 0x18, 0x3b, 0x7b, 0xdb, 0xdb, 0xdb, 0xdb, 0xdb, 0xdb, 0xdb, 0xdb, 0x03, 0x03, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-const unsigned char happybird4[32] = { 0xe6, 0x89, 0xc9, 0x69, 0x29, 0xc6, 0x00, 0x00, 0x00, 0x00, 0x00, 0x9b, 0xdb, 0x5b, 0x5b, 0xdb, 0x9b, 0xdb, 0x43, 0x59, 0x58, 0x40, 0xc0, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-const unsigned char happybird5[32] = { 0x76, 0x41, 0x61, 0x36, 0x11, 0x66, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0f, 0x1f, 0x1b, 0x1b, 0x1b, 0x1b, 0xdb, 0xdb, 0xdf, 0xcf, 0x03, 0x03, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-
-void display_happybird()
-{
-    strobe(WSYNC);
-    strobe(HMOVE);
-    *COLUBK = RED;
-    *VDELP0 = 1;
-    *VDELP1 = 1;
-    *NUSIZ0 = 0x33;
-    *NUSIZ1 = 0x33;
-    *COLUP0 = WHITE;
-    *COLUP1 = WHITE;
-    *HMP1 = 0xA0; 
-    strobe(RESP0);
-    strobe(RESP1);
-    *HMP0 = 0x90;
-    strobe(WSYNC);
-    strobe(HMOVE);
-    csleep(7);
-    *HMP1 = 0x0;
-    *HMP0 = 0x0;
-    for (Y = 31; Y >= 0; Y--) {
-        strobe(WSYNC);
-        strobe(HMOVE);
-        i = Y;
-        *GRP0 = happybird0[Y];
-        *GRP1 = happybird1[Y];
-        *GRP0 = happybird2[Y];
-        X = happybird4[Y];
-        j = happybird5[Y];
-        load(happybird3[Y]);
-        Y = j;
-        store(*GRP1);
-        *GRP0 = X;
-        *GRP1 = Y;
-        strobe(GRP0);
-        Y = i;
-    }
-    strobe(WSYNC);
-    strobe(HMOVE);
-    *VDELP0 = 0;
-    *VDELP1 = 0;
-    *GRP0 = 0;
-    *GRP1 = 0;
-}
-#endif
-
 const bank2 aligned(128) unsigned char normal0[7] = { 0x24, 0x25, 0x2d, 0x2d, 0x34, 0x34, 0x24 };
 const bank2 unsigned char normal1[7] = { 0x92, 0x52, 0x52, 0x52, 0x8b, 0x00, 0x00 };
 const bank2 unsigned char normal2[7] = { 0xa6, 0xaa, 0xaa, 0xaa, 0xc6, 0x00, 0x00 };
@@ -944,7 +1004,7 @@ const bank2 unsigned char normal4[7] = { 0x91, 0xaa, 0xaa, 0xaa, 0x11, 0x00, 0x0
 const bank2 unsigned char normal5[7] = { 0x98, 0xa0, 0xb8, 0xa8, 0x90, 0x80, 0x80 };
 
 const bank2 unsigned char pro0[7] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-const bank2 unsigned char pro1[7] = { 0x21, 0x21, 0x39, 0x25, 0x24, 0x24, 0x38 };
+const bank2 unsigned char pro1[7] = { 0x21, 0x21, 0x39, 0x25, 0x24, 0x34, 0x38 };
 const bank2 unsigned char pro2[7] = { 0x10, 0x28, 0x28, 0x28, 0x90, 0x00, 0x00 };
 const bank2 unsigned char pro3[7] = { 0xa9, 0xaa, 0xaa, 0xaa, 0xf1, 0x00, 0x00 };
 const bank2 unsigned char pro4[7] = { 0x19, 0xaa, 0xab, 0xaa, 0x19, 0x08, 0x08 };
@@ -1327,6 +1387,7 @@ void bottom()
     *TIM64T = (OVERSCAN * 76 + 13) / 64;
     init_bird_sprite_pos(); // 4 lines
     play_sound_iteration();
+    speakout();
     while (*INTIM);
 }
 
@@ -1380,9 +1441,11 @@ void main()
    
     if (state == 0 || state == 1 || state == 3) {
         if (*SWCHB & 0x40) {
+            if (game_mode == 0) speak_pro_mode();
             game_mode = 1;
             difficulty = 4;
         } else {
+            if (game_mode == 1) speak_normal_mode();
             game_mode = 0;
             difficulty = 8;
         }
@@ -1400,7 +1463,7 @@ void main()
         if (ybird >> 8 < 70) {
             flap();
         } 
-        if ((*INPT4 & 0x80) != 0) {
+        if (!(*INPT4 & 0x80)) {
             if (button_pressed == 0) {
                 getready();
             }
@@ -1411,7 +1474,7 @@ void main()
         *COLUP1 = WHITE;
         if (bird_type == 0) bird_type = 1;
         else bird_type = 0;
-        if ((*INPT4 & 0x80) != 0) {
+        if (!(*INPT4 & 0x80)) {
             if (button_pressed == 0) {
                 button_pressed = 1;
                 yspeed = 0;
@@ -1429,7 +1492,7 @@ void main()
         *COLUP1 = WHITE;
         if (bird_type == 0) bird_type = 1;
         else bird_type = 0;
-        if ((*INPT4 & 0x80) != 0) {
+        if (!(*INPT4 & 0x80)) {
             if (button_pressed == 0) {
                 getready();
             }
@@ -1467,7 +1530,12 @@ void main()
     *CXCLR = 0;
     strobe(WSYNC);
     strobe(HMOVE);
-    if (!(*SWCHB & 0x01)) init(); 
+    if (!(*SWCHB & 0x01)) {
+        if (!reset_pressed) {
+            reset_pressed = 1; 
+            init(); // Reset 
+        }
+    } else reset_pressed = 0;
     *HMM0 = 0;
     *HMM1 = 0;
         
