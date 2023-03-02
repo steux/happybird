@@ -64,7 +64,7 @@ unsigned char lPFx[12];
 unsigned char rPFx[12];
 unsigned char lPFy[12];
 unsigned char rPFy[12];
-char left_window, right_window;
+signed char left_window, right_window;
 unsigned short ybird;
 signed short yspeed;
 unsigned char button_pressed;
