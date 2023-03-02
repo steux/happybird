@@ -14,11 +14,13 @@ HappyBird implements :
 
 - Highscore save on SaveKey (high score reset by pulling the Settings switch for 5 seconds)
 
-- Amateur and Pro modes
+- Amateur and Pro modes (Pro definitely recommended)
 
 - Pause with the Color/BW switch 
 
 - Reach 100, 200, 300, etc and some colorful animations will start
+
+- Atarivox exclamation every 8 points
 
 - PlusROM High Score Club compatible !
 
@@ -41,10 +43,3 @@ Type `dasm out.a -f3 -v4 -oout.bin -lout.lst -sout.sym` to make the cartridge.
 
 You can run freely this game on Harmony cart or PlusCart, and most likely on any cart able to run F6 bankswitching scheme
 carts.
-
-This ROM doesn't work directly with the Stella emulator, due to false autodetection of paddle inputs. Run stella with :
-`stella -lc Joystick happybird.bin`
-
-# TODO
-
-- [ ] add AtariVox sounds when I'll have received mine... This will be the "Deluxe" version
