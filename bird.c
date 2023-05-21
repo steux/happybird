@@ -800,7 +800,7 @@ void getready()
     load_scroll_sequence();
     blinking_if_high_score = BROWN;
     blinking_counter = 0;
-    rainbow_offset = 0;
+    rainbow_offset = 0; 
     rainbow_sequence = 0;
     speak_getready();
 }
@@ -911,8 +911,8 @@ void game_logic()
     } else button_pressed = 0;
 
     if ((*CXP0FB & 0x80) != 0) gameover();
-    if ((*CXP1FB & 0x80) != 0) gameover();
-    if ((*CXBLPF & 0x80) != 0) gameover();
+    else if ((*CXP1FB & 0x80) != 0) gameover();
+    else if ((*CXBLPF & 0x80) != 0) gameover();
 
     if (ybird >> 8 < 100) do_display_score = 1;
     else if (ybird >> 8 > 150) do_display_score = 0;
