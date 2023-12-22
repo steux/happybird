@@ -244,7 +244,7 @@ void play_sound_iteration()
 
 void speakout()
 {
-    asm("SPKOUT i");
+    asm("SPKOUT i", 48);
 }
 
 const char happybird_speech[] = { 31, 199, 133, 145, 167, 6, 183, 132, 198, 128, 6, 7, 170, 151, 176, 6, 0xff };
@@ -292,45 +292,46 @@ inline void speak_pro_mode() { speech_addr = pro_mode_speech; }
 #include "i2c.inc"
 
 === ASSEMBLER BEGIN ===
+; codesize: 169
     I2C_SUBS i
 ==== ASSEMBLER END ====
 
 void save_highscore()
 {
-    asm("jsr i2c_startwrite");
-    asm("bcs .eeprom_error");
+    asm("jsr i2c_startwrite", 3);
+    asm("bcs .eeprom_error", 2);
     load(0x14);
-    asm("jsr i2c_txbyte");
+    asm("jsr i2c_txbyte", 3);
     load(0x80);
-    asm("jsr i2c_txbyte");
+    asm("jsr i2c_txbyte", 3);
     load(highscore_high);
-    asm("jsr i2c_txbyte");
+    asm("jsr i2c_txbyte", 3);
     load(highscore_low);
-    asm("jsr i2c_txbyte");
+    asm("jsr i2c_txbyte", 3);
 eeprom_error:
-    asm("jsr i2c_stopwrite");
+    asm("jsr i2c_stopwrite", 3);
 }
 
 void load_highscore()
 {
-    asm("jsr i2c_startwrite	; Start signal and $a0 command byte");
-    asm("bcs .eeprom_error	; exit if command byte not acknowledged");
+    asm("jsr i2c_startwrite	; Start signal and $a0 command byte", 3);
+    asm("bcs .eeprom_error	; exit if command byte not acknowledged", 2);
     load(0x14);
-    asm("jsr i2c_txbyte");
+    asm("jsr i2c_txbyte", 3);
     load(0x80);
-    asm("jsr i2c_txbyte");
-    asm("jsr i2c_stopwrite");
-    asm("jsr i2c_startread");
-    asm("jsr i2c_rxbyte");
+    asm("jsr i2c_txbyte", 3);
+    asm("jsr i2c_stopwrite", 3);
+    asm("jsr i2c_startread", 3);
+    asm("jsr i2c_rxbyte", 3);
     store(highscore_high);
-    asm("jsr i2c_rxbyte");
+    asm("jsr i2c_rxbyte", 3);
     store(highscore_low);
     if (highscore_high == 0xff || highscore_low == 0xff) {
         highscore_high = 0;
         highscore_low = 0;
     }
 eeprom_error:
-    asm("jsr i2c_stopread");
+    asm("jsr i2c_stopread", 3);
 }
 
 #ifdef PLUSROM
@@ -762,16 +763,16 @@ void init()
 
 void rand()
 {
-    asm("lda random");
-    asm("asl");
-    asm("eor random");
-    asm("asl");
-    asm("eor random");
-    asm("asl");
-    asm("asl");
-    asm("eor random");
-    asm("asl");
-    asm("rol random");
+    asm("lda random", 2);
+    asm("asl", 1);
+    asm("eor random", 2);
+    asm("asl", 1);
+    asm("eor random", 2);
+    asm("asl", 1);
+    asm("asl", 1);
+    asm("eor random", 2);
+    asm("asl", 1);
+    asm("rol random", 2);
 }
 
 void next_sequence()

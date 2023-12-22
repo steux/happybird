@@ -1,3 +1,4 @@
+; codesize: 0 
 ;
 ; i2c.inc
 ;

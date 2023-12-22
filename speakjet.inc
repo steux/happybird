@@ -1,4 +1,4 @@
-;
+; codesize: 0 
 ; speakjet.inc
 ;
 ;

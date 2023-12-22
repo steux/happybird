@@ -74,7 +74,7 @@ START
 *GRP1 = 0xF8;
 *HMBL = 0xF0;
 
-asm("nop");
+asm("nop", 1);
 strobe(HMOVE);
 START
 *GRP0 = 0x10;
