@@ -4,7 +4,7 @@
 
 # Paul's HappyBird. A colorful game for the Atari 2600.
 
-Paul's HeppyBird has been written in C using cc2600. 
+Paul's HappyBird has been written in C using cc2600. 
 It's a 16KB ROM (classical ATARI bankswitching scheme) that has been
 tested on Harmony cart and PlusCart (but in PAL version only). 
 
